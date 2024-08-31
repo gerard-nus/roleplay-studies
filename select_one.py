@@ -3,9 +3,14 @@ import PyPDF2
 import streamlit as st
 import os
 
+
 # Access the API key
 api_key = st.secrets["API_KEY"]
+    # this is stored in streamlit dashboard -> see the streamlit website
+
+
 genai.configure(api_key=api_key)
+
 
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):
@@ -24,24 +29,25 @@ syllabus_texts = {}
 for pdf_file in pdf_files:
     syllabus_texts[os.path.basename(pdf_file)] = extract_text_from_pdf(pdf_file)
 
+# Response Generation Function:
 # Response Generation Function
-def generate_response(messages, selected_syllabi_texts):
+def generate_response(messages, syllabus_text):
     model = genai.GenerativeModel('gemini-1.5-flash')
     conversation_history = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
-    combined_syllabus_text = "\n\n".join(selected_syllabi_texts)
-    prompt = f"Syllabus information:\n{combined_syllabus_text}\n\nConversation history:\n{conversation_history}\nAI:"
+    prompt = f"Syllabus information: {syllabus_text}\n\nConversation history:\n{conversation_history}\nAI:"
     response = model.generate_content(prompt)
     return response.text
 
+
 # Streamlit Interface
-st.title("Multi-document Social Work Studies Chatbot")
+st.title("Role Play Social Work Studies Chatbot")
 
 # Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Multiple syllabus selection
-selected_syllabi = st.multiselect("Select studies to query", list(syllabus_texts.keys()), default=list(syllabus_texts.keys())[0])
+# Syllabus selection
+selected_syllabus = st.selectbox("Select a study to query", list(syllabus_texts.keys()))
 
 # Display chat messages
 for message in st.session_state.messages:
@@ -49,15 +55,15 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # User input
-if prompt := st.chat_input("Ask a question about the selected studies"):
+if prompt := st.chat_input("Ask a question about the selected study"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     # Generate AI response
-    selected_syllabi_texts = [syllabus_texts[syllabus] for syllabus in selected_syllabi]
+    syllabus_text = syllabus_texts[selected_syllabus]
     with st.chat_message("assistant"):
-        response = generate_response(st.session_state.messages, selected_syllabi_texts)
+        response = generate_response(st.session_state.messages, syllabus_text)
         st.markdown(response)
 
     st.session_state.messages.append({"role": "assistant", "content": response})
