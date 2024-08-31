@@ -40,14 +40,14 @@ def generate_response(messages, syllabus_text):
 
 
 # Streamlit Interface
-st.title("SW4103 Syllabus, Notes, Assignment Guidelines  Chatbot")
+st.title("Role Play Social Work Studies Chatbot")
 
 # Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # Syllabus selection
-selected_syllabus = st.selectbox("Select a syllabus to query", list(syllabus_texts.keys()))
+selected_syllabus = st.selectbox("Select a study to query", list(syllabus_texts.keys()))
 
 # Display chat messages
 for message in st.session_state.messages:
@@ -55,7 +55,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # User input
-if prompt := st.chat_input("Ask a question about the selected document"):
+if prompt := st.chat_input("Ask a question about the selected study"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
