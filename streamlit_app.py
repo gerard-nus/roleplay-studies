@@ -37,10 +37,10 @@ def results_to_csv(results):
 
 
 # Streamlit Interface
-st.title("PDF Information Extractor")
+st.title("Role Play Studies Extractor and CSV download")
 
 # File uploader
-uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
+uploaded_files = st.file_uploader("Upload PDF only files", type="pdf", accept_multiple_files=True)
 
 # Query input
 query = st.text_input("Enter your query for information extraction:")
